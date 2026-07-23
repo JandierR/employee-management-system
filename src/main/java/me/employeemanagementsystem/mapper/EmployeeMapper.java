@@ -22,7 +22,7 @@ public class EmployeeMapper {
         employee.setId(employeeDto.getId());
         employee.setFirstName(employeeDto.getFirstName());
         employee.setLastName(employeeDto.getLastName());
-        employee.setEmail(employee.getEmail());
+        employee.setEmail(employeeDto.getEmail());
         employee.setDepartment(department);
 
         return employee;
