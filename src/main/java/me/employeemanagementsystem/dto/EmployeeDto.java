@@ -25,15 +25,25 @@ public class EmployeeDto {
     @NotNull(message = "Department ID is required")
     private Long departmentId;
 
+    @NotBlank(message = "Status is required")
+    @Size(min = 2, max = 50, message = "Status must be between 2 and 50 characters")
+    private String status;
+
+    @NotBlank(message = "Position is required")
+    @Size(min = 2, max = 50, message = "Position must be between 2 and 50 characters")
+    private String position;
+
     public EmployeeDto() {
     }
 
-    public EmployeeDto(Long id, String firstName, String lastName, String email, Long departmentId) {
+    public EmployeeDto(Long id, String firstName, String lastName, String email, Long departmentId, String status, String position) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.departmentId = departmentId;
+        this.status = status;
+        this.position = position;
     }
 
     public Long getId() {
@@ -74,5 +84,21 @@ public class EmployeeDto {
 
     public void setDepartmentId(Long departmentId) {
         this.departmentId = departmentId;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getPosition() {
+        return position;
+    }
+
+    public void setPosition(String position) {
+        this.position = position;
     }
 }

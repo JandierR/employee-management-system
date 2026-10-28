@@ -7,7 +7,8 @@ import jakarta.persistence.*;
 public class Employee {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SequenceGenerator(name = "EmployeeSequence", initialValue = 1000)
+    @GeneratedValue(generator = "EmployeeSequence")
     private Long id;
 
     @Column(name = "first_name", nullable = false)
@@ -23,15 +24,25 @@ public class Employee {
     @JoinColumn(name = "department_id", nullable = false)
     private Department department;
 
+    @Column(name = "status", nullable = false)
+    private String status;
+
+
+    @Column(name = "position", nullable = false)
+    private String positon;
+
+
     public Employee() {
     }
 
-    public Employee(Long id, String firstName, String lastName, String email, Department department) {
+    public Employee(Long id, String firstName, String lastName, String email, Department department, String status, String positon) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.department = department;
+        this.status = status;
+        this.positon = positon;
     }
 
     public Long getId() {
@@ -72,5 +83,21 @@ public class Employee {
 
     public void setDepartment(Department department) {
         this.department = department;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getPositon() {
+        return positon;
+    }
+
+    public void setPositon(String positon) {
+        this.positon = positon;
     }
 }
