@@ -61,5 +61,6 @@ public class DepartmentServiceImpl implements DepartmentService {
         Department existingDepartment = departmentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Department not found with ID " + id));
         departmentRepository.delete(existingDepartment);
+        departmentRepository.flush();
     }
 }

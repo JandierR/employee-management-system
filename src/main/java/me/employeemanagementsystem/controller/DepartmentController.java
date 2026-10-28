@@ -13,7 +13,7 @@ import java.util.List;
 @RequestMapping("/api/departments")
 @CrossOrigin(origins = "http://localhost:5173")
 public class DepartmentController {
-    
+
 
 
     private final DepartmentService departmentService;
@@ -50,8 +50,11 @@ public class DepartmentController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteDepartment(@PathVariable("id") Long departmentId) {
-        departmentService.deleteDepartment(departmentId);
+       
+            departmentService.deleteDepartment(departmentId);
 
-        return ResponseEntity.ok("Department deleted successfully!");
+            return ResponseEntity.ok("Department deleted successfully!");
+
+
     }
 }
