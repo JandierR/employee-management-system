@@ -7,7 +7,8 @@ import jakarta.persistence.*;
 public class Department {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SequenceGenerator(name = "DepartmentSequence", initialValue = 1000)
+    @GeneratedValue(generator = "DepartmentSequence")
     private Long id;
 
     @Column(name = "name", nullable = false, unique = true)
