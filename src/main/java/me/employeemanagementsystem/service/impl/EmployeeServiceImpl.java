@@ -81,6 +81,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         existingEmployee.setLastName(employeeDto.getLastName());
         existingEmployee.setEmail(employeeDto.getEmail());
         existingEmployee.setDepartment(department);
+        existingEmployee.setPositon(employeeDto.getPosition());
+        existingEmployee.setStatus(employeeDto.getStatus());
 
         Employee updatedEmployee = employeeRepository.save(existingEmployee);
         return EmployeeMapper.mapToEmployeeDto(updatedEmployee);
