@@ -7,7 +7,7 @@ import jakarta.persistence.*;
 public class Employee {
 
     @Id
-    @SequenceGenerator(name = "EmployeeSequence", initialValue = 1000)
+    @SequenceGenerator(name = "EmployeeSequence", initialValue = 1000, allocationSize = 1)
     @GeneratedValue(generator = "EmployeeSequence")
     private Long id;
 
