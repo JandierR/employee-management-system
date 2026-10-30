@@ -1,7 +1,4 @@
-Here is a clean, professional README file written in clear, natural prose. You can copy this directly into a `README.md` file at the root of your project directory.
-
 ---
-
 # Employee Management System
 
 A RESTful web service built with Java and Spring Boot that handles organization departments and employee records. The application exposes standard REST endpoints for managing entities, linking employees to departments, validating request inputs, and managing persistence with MySQL.
