@@ -1,138 +1,344 @@
----
-# Employee Management System
+# Employee Management System – Backend
 
-A RESTful web service built with Java and Spring Boot that handles organization departments and employee records. The application exposes standard REST endpoints for managing entities, linking employees to departments, validating request inputs, and managing persistence with MySQL.
+A RESTful backend application built with **Java and Spring Boot** to manage employees and departments. The application provides CRUD operations, handles employee-department relationships, validates incoming requests, and persists data in a MySQL database.
 
----
+This backend is part of a full-stack Employee Management System, with a separate frontend built using React and TypeScript.
 
-## Technical Stack
+## Technologies
 
-* **Language:** Java 17
-* **Framework:** Spring Boot 3
-* **Data Access:** Spring Data JPA / Hibernate
-* **Database:** MySQL 8
-* **API Documentation & Testing:** Postman
-* **Build Tool:** Maven
+| Technology | Purpose |
+|---|---|
+| Java 17 | Programming language |
+| Spring Boot 4.1.0 | Backend application framework |
+| Spring Web MVC | REST API development |
+| Spring Data JPA | Database access and persistence |
+| Hibernate | ORM implementation |
+| MySQL | Relational database |
+| Jakarta Bean Validation | Request data validation |
+| Maven | Dependency and project management |
+| Postman | API testing |
 
----
+## Features
 
-## Application Architecture
+- **Employee Management:** Create, retrieve, update, and delete employee records.
+- **Department Management:** Create, retrieve, update, and delete departments.
+- **Employee-Department Relationship:** Associate each employee with a department.
+- **Filtering by Department:** Retrieve employees belonging to a specific department.
+- **Data Validation:** Validate incoming requests using Jakarta Bean Validation.
+- **DTO Mapping:** Separate API data transfer objects from database entities.
+- **Exception Handling:** Handle missing resources and database integrity conflicts.
+- **RESTful API:** Expose HTTP endpoints that communicate using JSON.
 
-The system follows a standard three-tier enterprise architecture:
+## Architecture
 
-1. **Controller Layer:** Exposes RESTful HTTP endpoints (`/api/departments` and `/api/employees`), handles incoming JSON requests, validates payload constraints using Jakarta Bean Validation, and formats outgoing responses using `ResponseEntity`.
-2. **Service Layer:** Houses core business rules, including entity mapping via custom utility classes, entity existence checks, and declarative transaction management (`@Transactional`).
-3. **Repository Layer:** Extends `JpaRepository` to perform CRUD operations, pagination, sorting, and dynamic SQL query derivation.
+The application follows a layered architecture to separate responsibilities and make the code easier to maintain.
 
-Data models are decoupled across layers using Data Transfer Objects (DTOs) to keep database entities private and avoid cyclic JSON references during serialization.
-
----
-
-## Entity Relationship Model
-
-The system operates around two main relational models:
-
-* **Department:** Contains an auto-incremented primary key, name, and description.
-* **Employee:** Contains an auto-incremented primary key, first name, last name, unique email, and a foreign key referencing the assigned department (`@ManyToOne` relationship).
-
----
-
-## Getting Started
-
-### Prerequisites
-
-* Java 17 Development Kit (JDK) installed.
-* MySQL Server running locally on port `3306`.
-* Apache Maven installed (or use the included Maven wrapper `./mvnw`).
-
-### Configuration
-
-1. Clone the repository to your local machine:
-```bash
-git clone https://github.com/your-username/employee-management-system.git
-cd employee-management-system
-
+```text
+src/main/java/me/employeemanagementsystem/
+│
+├── controller/
+│   ├── DepartmentController.java
+│   ├── EmployeeController.java
+│   └── TestController.java
+│
+├── dto/
+│   ├── DepartmentDto.java
+│   └── EmployeeDto.java
+│
+├── entity/
+│   ├── Department.java
+│   └── Employee.java
+│
+├── exception/
+│   ├── GlobalExceptionHandler.java
+│   └── ResourceNotFoundException.java
+│
+├── mapper/
+│   ├── DepartmentMapper.java
+│   └── EmployeeMapper.java
+│
+├── repository/
+│   ├── DepartmentRepository.java
+│   └── EmployeeRepository.java
+│
+├── service/
+│   ├── DepartmentService.java
+│   ├── EmployeeService.java
+│   └── impl/
+│       ├── DepartmentServiceImpl.java
+│       └── EmployeeServiceImpl.java
+│
+└── EmployeeManagementSystemApplication.java
 ```
 
+### Layer responsibilities
 
-2. Configure your MySQL database settings in `src/main/resources/application.properties`:
-```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/employee_db?useSSL=false&serverTimezone=UTC
-spring.datasource.username=your_mysql_username
-spring.datasource.password=your_mysql_password
+- **Controller:** Defines REST endpoints, receives HTTP requests, and returns HTTP responses.
+- **Service:** Handles application logic, including resource lookups and employee-department assignments.
+- **Repository:** Uses Spring Data JPA to interact with the database.
+- **Entity:** Represents the database tables and their relationships.
+- **DTO:** Defines the data exchanged between the frontend and backend.
+- **Mapper:** Converts entities into DTOs and vice versa.
+- **Exception:** Handles application errors, including missing resources and database integrity violations.
 
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
+## Database Design
 
+The application uses two main entities: `Department` and `Employee`.
+
+A department can have multiple employees, while each employee must belong to one department. This relationship is implemented using JPA's `@ManyToOne` mapping.
+
+```mermaid
+erDiagram
+    DEPARTMENT ||--o{ EMPLOYEE : contains
+
+    DEPARTMENT {
+        Long id PK
+        String name
+        String description
+    }
+
+    EMPLOYEE {
+        Long id PK
+        String firstName
+        String lastName
+        String email UK
+        Long department_id FK
+        String status
+        String position
+    }
 ```
 
+### Department
 
-3. Ensure the target database exists in MySQL before launching:
-```sql
-CREATE DATABASE IF NOT EXISTS employee_db;
+| Field | Description |
+|---|---|
+| id | Unique department identifier |
+| name | Department name (required and unique) |
+| description | Optional department description |
 
-```
+### Employee
 
-
-
-### Running the Application
-
-Execute the following command in your terminal from the project root:
-
-```bash
-./mvnw spring-boot:run
-
-```
-
-The application will start on port `8080` by default (`http://localhost:8080`).
-
----
+| Field | Description |
+|---|---|
+| id | Unique employee identifier |
+| firstName | Employee's first name |
+| lastName | Employee's last name |
+| email | Employee's unique email address |
+| departmentId | ID of the employee's department |
+| status | Employee status |
+| position | Employee job position |
 
 ## API Endpoints
 
-### Departments (`/api/departments`)
+The API is available locally at `http://localhost:8080`.
+
+### Department Endpoints
+
+Base path: `/api/departments`
 
 | Method | Endpoint | Description |
-| --- | --- | --- |
-| `POST` | `/api/departments` | Create a new department |
-| `GET` | `/api/departments/{id}` | Retrieve department by ID |
-| `GET` | `/api/departments` | Retrieve all departments |
-| `PUT` | `/api/departments/{id}` | Update an existing department |
-| `DELETE` | `/api/departments/{id}` | Delete department by ID |
+|---|---|---|
+| POST | `/api/departments` | Create a department |
+| GET | `/api/departments` | Retrieve all departments |
+| GET | `/api/departments/{id}` | Retrieve a department by ID |
+| PUT | `/api/departments/{id}` | Update a department |
+| DELETE | `/api/departments/{id}` | Delete a department |
 
-### Employees (`/api/employees`)
+### Employee Endpoints
+
+Base path: `/api/employees`
 
 | Method | Endpoint | Description |
-| --- | --- | --- |
-| `POST` | `/api/employees` | Create a new employee |
-| `GET` | `/api/employees/{id}` | Retrieve employee by ID |
-| `GET` | `/api/employees` | Retrieve all employees |
-| `GET` | `/api/employees/department/{departmentId}` | Retrieve employees belonging to a department |
-| `PUT` | `/api/employees/{id}` | Update an existing employee |
-| `DELETE` | `/api/employees/{id}` | Delete employee by ID |
+|---|---|---|
+| POST | `/api/employees` | Create an employee |
+| GET | `/api/employees` | Retrieve all employees |
+| GET | `/api/employees/{id}` | Retrieve an employee by ID |
+| GET | `/api/employees/department/{departmentId}` | Retrieve employees by department |
+| PUT | `/api/employees/{id}` | Update an employee |
+| DELETE | `/api/employees/{id}` | Delete an employee |
 
----
+### Connection Test
 
-## Example Payload Formats
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/api/test-connection` | Verify that the backend API is responding |
 
-### Create Department (`POST /api/departments`)
+Example response:
+
+```json
+{
+  "message": "Connection Successful!"
+}
+```
+
+## Example Requests
+
+The API accepts and returns JSON data.
+
+### Create a Department
+
+**POST** `/api/departments`
 
 ```json
 {
   "name": "Engineering",
-  "description": "Software Development and Technical Operations"
+  "description": "Software development and technical operations"
 }
-
 ```
 
-### Create Employee (`POST /api/employees`)
+### Create an Employee
+
+**POST** `/api/employees`
 
 ```json
 {
   "firstName": "Jane",
   "lastName": "Doe",
   "email": "jane.doe@company.com",
-  "departmentId": 1
+  "departmentId": 1000,
+  "status": "Active",
+  "position": "Software Developer"
 }
-
 ```
+
+The `departmentId` must correspond to an existing department.
+
+## Validation and Exception Handling
+
+Incoming requests are validated using Jakarta Bean Validation annotations.
+
+Some of the implemented validation rules include:
+
+- Department names are required and must contain between 2 and 50 characters.
+- Employee first and last names are required and must contain between 2 and 50 characters.
+- Employee emails must contain a valid email format.
+- Employee department IDs, status, and position are required.
+- Employee status and position must contain between 2 and 50 characters.
+- Department descriptions have a maximum length of 255 characters.
+
+The application also includes exception handling for common situations:
+
+- **404 Not Found:** Returned when an employee, department, or requested resource does not exist.
+- **409 Conflict:** Returned when a department cannot be deleted because employees are still associated with it.
+
+## Getting Started
+
+Follow these steps to run the backend locally.
+
+### Prerequisites
+
+Make sure you have installed:
+
+- Java 17 or later.
+- MySQL 8 or a compatible MySQL installation.
+- Git.
+- An IDE such as IntelliJ IDEA (optional).
+- Postman (optional, for API testing).
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/JandierR/employee-management-system.git
+```
+
+Navigate into the project directory:
+
+```bash
+cd Employee-management-system
+```
+
+
+### 2. Create the MySQL Database
+
+Open MySQL and execute:
+
+```sql
+CREATE DATABASE employee_db;
+```
+
+The application uses this database to store employee and department information.
+
+### 3. Configure Database Credentials
+
+Open `src/main/resources/application.properties`.
+
+Configure the database connection using environment variables:
+
+```properties
+spring.application.name=Employee-management-system
+
+spring.datasource.url=jdbc:mysql://localhost:3306/employee_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+spring.datasource.username=${DB_USERNAME:root}
+spring.datasource.password=${DB_PASSWORD}
+
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+```
+
+Set the following environment variables before running the application:
+
+- `DB_USERNAME`: Your MySQL username.
+- `DB_PASSWORD`: Your MySQL password.
+
+The `spring.jpa.hibernate.ddl-auto=update` setting allows Hibernate to update the database schema based on the entity mappings. It is intended for development environments.
+
+### 4. Run the Application
+
+You can start the application using the Maven wrapper.
+
+**Windows:**
+
+```bash
+mvnw.cmd spring-boot:run
+```
+
+**Linux / macOS:**
+
+```bash
+./mvnw spring-boot:run
+```
+
+Alternatively, if Maven is installed:
+
+```bash
+mvn spring-boot:run
+```
+
+Once the application starts successfully, the API will be available at:
+
+`http://localhost:8080`
+
+## API Testing
+
+The REST endpoints can be tested using Postman or another API client.
+
+You can test the main operations, including:
+
+- Creating and retrieving departments.
+- Creating employees and assigning them to departments.
+- Updating employee and department information.
+- Filtering employees by department.
+- Deleting records.
+- Checking the backend connection.
+
+The project currently includes a Spring Boot application context loading test.
+
+## Frontend Integration
+
+This backend is designed to work with a separate frontend application built with React and TypeScript.
+
+The frontend communicates with the REST API through HTTP requests using Axios. The backend processes those requests, applies the application logic, and interacts with MySQL through Spring Data JPA.
+
+**Frontend Repository:**  
+[Employee Management System – Frontend](https://github.com/JandierR/employee-management-system-frontend)
+
+The backend currently allows cross-origin requests from the local frontend development server at `http://localhost:5173`.
+
+## Author
+
+**Jandier R.**
+
+[GitHub Profile](https://github.com/JandierR)
