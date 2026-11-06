@@ -22,7 +22,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public DepartmentDto createDepartment(DepartmentDto departmentDto) {
-        if((boolean) departmentRepository.existsDepartmentByName(departmentDto.getName())){
+        if(departmentRepository.existsDepartmentByName(departmentDto.getName())){
             throw new RuntimeException("Department name already exists!");
         }
         Department department = DepartmentMapper.mapToDepartment(departmentDto);
