@@ -14,7 +14,7 @@ public class EmployeeMapper {
                 employee.getEmail(),
                 employee.getDepartment() != null ? employee.getDepartment().getId() : null,
                 employee.getStatus(),
-                employee.getPositon()
+                employee.getPosition()
         );
     }
 
@@ -26,7 +26,7 @@ public class EmployeeMapper {
         employee.setLastName(employeeDto.getLastName());
         employee.setEmail(employeeDto.getEmail());
         employee.setDepartment(department);
-        employee.setPositon(employeeDto.getPosition());
+        employee.setPosition(employeeDto.getPosition());
         employee.setStatus(employeeDto.getStatus());
 
         return employee;

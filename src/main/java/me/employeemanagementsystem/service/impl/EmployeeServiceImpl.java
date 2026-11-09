@@ -31,8 +31,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         Department department = departmentRepository.findById(employeeDto.getDepartmentId())
                 .orElseThrow(() -> new ResourceNotFoundException("Department not found with ID " + employeeDto.getDepartmentId()));
 
-        if (employeeRepository.existsByEmail(employeeDto.getEmail())) {
-            throw new IllegalArgumentException("Employee email already in use: " + employeeDto.getEmail());
+        if (employeeRepository.existsById(employeeDto.getId())) {
+            throw new IllegalArgumentException("Employee already exist with ID " + employeeDto.getId());
         }
         Employee employee = EmployeeMapper.mapToEmployee(employeeDto, department);
         Employee savedEmployee = employeeRepository.save(employee);
@@ -81,7 +81,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         existingEmployee.setLastName(employeeDto.getLastName());
         existingEmployee.setEmail(employeeDto.getEmail());
         existingEmployee.setDepartment(department);
-        existingEmployee.setPositon(employeeDto.getPosition());
+        existingEmployee.setPosition(employeeDto.getPosition());
         existingEmployee.setStatus(employeeDto.getStatus());
 
         Employee updatedEmployee = employeeRepository.save(existingEmployee);

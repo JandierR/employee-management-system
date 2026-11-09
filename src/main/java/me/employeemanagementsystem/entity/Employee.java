@@ -29,20 +29,20 @@ public class Employee {
 
 
     @Column(name = "position", nullable = false)
-    private String positon;
+    private String position;
 
 
     public Employee() {
     }
 
-    public Employee(Long id, String firstName, String lastName, String email, Department department, String status, String positon) {
+    public Employee(Long id, String firstName, String lastName, String email, Department department, String status, String position) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.department = department;
         this.status = status;
-        this.positon = positon;
+        this.position = position;
     }
 
     public Long getId() {
@@ -93,11 +93,11 @@ public class Employee {
         this.status = status;
     }
 
-    public String getPositon() {
-        return positon;
+    public String getPosition() {
+        return position;
     }
 
-    public void setPositon(String positon) {
-        this.positon = positon;
+    public void setPosition(String positon) {
+        this.position = positon;
     }
 }

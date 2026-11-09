@@ -132,8 +132,7 @@ class DepartmentServiceImplTest {
 
         List<DepartmentDto> result = departmentServiceImpl.getAllDepartments();
 
-        assertNotNull(result);
-        assertEquals(0, result.size());
+        assertTrue(result.isEmpty());
 
         verify(departmentRepository, times(1)).findAll();
     }
