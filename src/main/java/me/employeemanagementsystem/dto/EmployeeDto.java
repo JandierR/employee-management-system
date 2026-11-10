@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public class EmployeeDto {
-
+    
     private Long id;
 
     @NotBlank(message = "First name is required")
