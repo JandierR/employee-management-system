@@ -3,12 +3,16 @@ package me.employeemanagementsystem.controller;
 import me.employeemanagementsystem.dto.DepartmentDto;
 import me.employeemanagementsystem.exception.ResourceNotFoundException;
 import me.employeemanagementsystem.service.impl.DepartmentServiceImpl;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -52,5 +56,41 @@ class DepartmentControllerTest {
 
         assertThat(mockMvcTester.get().uri("/api/departments/{id}", invalidDepartmentId))
                 .hasStatus(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    void getAllDepartments_ShouldReturn200AndDepartmentDtoList_WhenDepartmentsExist() {
+        DepartmentDto mockDto1 = new DepartmentDto(1L, "Engineering", "Engineering Description");
+        DepartmentDto mockDto2 = new DepartmentDto(2L, "IT", "IT Description");
+        DepartmentDto mockDto3 = new DepartmentDto(3L, "Finance", "Finance Description");
+
+        List<DepartmentDto> mockList = new ArrayList<>(List.of(mockDto1, mockDto2, mockDto3));
+
+        when(departmentService.getAllDepartments()).thenReturn(mockList);
+
+        assertThat(mockMvcTester.get().uri("/api/departments"))
+                .hasStatusOk()
+                .bodyJson()
+                .convertTo(InstanceOfAssertFactories.list(DepartmentDto.class))
+                .hasSize(3)
+                .satisfies(responseList ->{
+                    assertThat(responseList.get(0).getName()).isEqualTo("Engineering");
+                    assertThat(responseList.get(1).getName()).isEqualTo("IT");
+                    assertThat(responseList.get(2).getName()).isEqualTo("Finance");
+                });
+    }
+
+    @Test
+    void getAllDepartments_ShouldReturn200AndEmptyList_WhenNoDepartmentsExist() {
+
+        when(departmentService.getAllDepartments())
+                .thenReturn(List.of());
+
+        assertThat(mockMvcTester.get().uri("/api/departments"))
+                .hasStatusOk()
+                .bodyJson()
+                .convertTo(InstanceOfAssertFactories.list(DepartmentDto.class))
+                .isEmpty();
+
     }
 }
