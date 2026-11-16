@@ -2,7 +2,7 @@ package me.employeemanagementsystem.controller;
 
 import me.employeemanagementsystem.dto.DepartmentDto;
 import me.employeemanagementsystem.exception.ResourceNotFoundException;
-import me.employeemanagementsystem.service.impl.DepartmentServiceImpl;
+import me.employeemanagementsystem.service.DepartmentService;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ class DepartmentControllerTest {
     private MockMvcTester mockMvcTester;
 
     @MockitoBean
-    private DepartmentServiceImpl departmentService;
+    private DepartmentService departmentService;
 
     @Autowired
     ObjectMapper objectMapper;
