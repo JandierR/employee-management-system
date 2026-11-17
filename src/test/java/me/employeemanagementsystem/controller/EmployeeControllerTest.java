@@ -153,10 +153,9 @@ class EmployeeControllerTest {
 
     @Test
     void createEmployee_ShouldReturn201AndSavedDto_WhenRequestIsValid() {
-        Long employeeId = 1L;
         Long departmentId = 1L;
 
-        EmployeeDto employeeDto = new EmployeeDto(employeeId, "Jandier", "Rojas",
+        EmployeeDto employeeDto = new EmployeeDto(null, "Jandier", "Rojas",
                 "JanRo@gmail.com", departmentId, "Active", "Developer");
 
         when(employeeService.createEmployee(any(EmployeeDto.class))).thenReturn(employeeDto);
@@ -182,10 +181,9 @@ class EmployeeControllerTest {
 
     @Test
     void createEmployee_ShouldReturn400_WhenRequestIsInvalid() {
-        Long employeeId = 1L;
         Long departmentId = 1L;
 
-        EmployeeDto invalidRequestDto = new EmployeeDto(employeeId, "", "Rojas",
+        EmployeeDto invalidRequestDto = new EmployeeDto(null, "", "Rojas",
                 "JanRo@gmail.com", departmentId, "Active", "Developer");
 
         String jsonRequest = objectMapper.writeValueAsString(invalidRequestDto);
@@ -196,15 +194,14 @@ class EmployeeControllerTest {
                 .hasStatus(HttpStatus.BAD_REQUEST);
 
 
-        verify(employeeService, never()).createEmployee(invalidRequestDto);
+        verifyNoInteractions(employeeService);
     }
 
     @Test
     void createEmployee_ShouldReturn404_WhenDepartmentIdDoesNotExist() {
-        Long employeeId = 1L;
         Long departmentId = 999L;
 
-        EmployeeDto invalidRequestDto = new EmployeeDto(employeeId, "Jandier", "Rojas",
+        EmployeeDto invalidRequestDto = new EmployeeDto(null, "Jandier", "Rojas",
                 "JanRo@gmail.com", departmentId, "Active", "Developer");
 
         when(employeeService.createEmployee(any(EmployeeDto.class)))
@@ -217,5 +214,100 @@ class EmployeeControllerTest {
                 .content(jsonRequest))
                 .hasStatus(HttpStatus.NOT_FOUND);
 
+    }
+
+    @Test
+    void updateEmployee_ShouldReturn200AndUpdatedDto_WhenRequestIsValid() {
+        Long employeeId = 1L;
+        Long departmentId = 1L;
+        EmployeeDto updateRequestDto = new EmployeeDto(employeeId, "Jandier", "Rojas",
+                "JanRo@gmail.com", departmentId, "Active", "Developer");
+
+        EmployeeDto updatedRequestDto = new EmployeeDto(employeeId, "Leo", "Messi",
+                "LeoMe@gmail.com", departmentId, "Inactive", "IT");
+
+        when(employeeService.updateEmployee(eq(employeeId), any(EmployeeDto.class)))
+                .thenReturn(updatedRequestDto);
+
+        String jsonRequest = objectMapper.writeValueAsString(updateRequestDto);
+        assertThat(mockMvcTester.put().uri("/api/employees/{id}", employeeId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonRequest))
+                .hasStatusOk()
+                .bodyJson()
+                .convertTo(EmployeeDto.class)
+                .satisfies(responseDto -> {
+                    assertThat(responseDto.getFirstName()).isEqualTo("Leo");
+                    assertThat(responseDto.getLastName()).isEqualTo("Messi");
+                    assertThat(responseDto.getEmail()).isEqualTo("LeoMe@gmail.com");
+                    assertThat(responseDto.getStatus()).isEqualTo("Inactive");
+                    assertThat(responseDto.getPosition()).isEqualTo("IT");
+                });
+
+        verify(employeeService, times(1))
+                .updateEmployee(eq(employeeId), any(EmployeeDto.class));
+    }
+
+    @Test
+    void updateEmployee_ShouldReturn404_WhenEmployeeIdDoesNotExist() {
+        Long invalidEmployeeId = 999L;
+        Long departmentId = 1L;
+
+        EmployeeDto invalidRequestDto = new EmployeeDto(invalidEmployeeId, "Jandier", "Rojas",
+                "JanRo@gmail.com", departmentId, "Active", "Developer");
+
+        when(employeeService.updateEmployee(eq(invalidEmployeeId), any(EmployeeDto.class)))
+                .thenThrow(new ResourceNotFoundException("Employee not found with ID 999"));
+
+        String jsonRequest = objectMapper.writeValueAsString(invalidRequestDto);
+
+        assertThat(mockMvcTester.put().uri("/api/employees/{id}", invalidEmployeeId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonRequest))
+                .hasStatus(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    void updateEmployee_ShouldReturn400_WhenEmployeeRequestIsInvalid() {
+        Long invalidEmployeeId = 1L;
+        Long departmentId = 1L;
+
+        EmployeeDto invalidRequestDto = new EmployeeDto(invalidEmployeeId, "", "Rojas",
+                "JanRo@gmail.com", departmentId, "Active", "Developer");
+
+
+        String jsonRequest = objectMapper.writeValueAsString(invalidRequestDto);
+
+        assertThat(mockMvcTester.put().uri("/api/employees/{id}", invalidEmployeeId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonRequest))
+                .hasStatus(HttpStatus.BAD_REQUEST);
+
+        verifyNoInteractions(employeeService);
+    }
+
+    @Test
+    void deleteEmployee_ShouldReturn200_WhenEmployeeIdExist() {
+        Long employeeId = 1L;
+
+        doNothing().when(employeeService).deleteEmployee(employeeId);
+
+        assertThat(mockMvcTester.delete().uri("/api/employees/{id}", employeeId))
+                .hasStatusOk();
+
+        verify(employeeService, times(1)).deleteEmployee(employeeId);
+    }
+
+    @Test
+    void deleteEmployee_ShouldReturn404_WhenEmployeeIdDoesNotExist() {
+        Long invalidEmployeeId = 999L;
+
+        doThrow(new ResourceNotFoundException("Employee not found with ID 999"))
+                .when(employeeService).deleteEmployee(invalidEmployeeId);
+
+        assertThat(mockMvcTester.delete().uri("/api/employees/{id}", invalidEmployeeId))
+                .hasStatus(HttpStatus.NOT_FOUND);
+
+        verify(employeeService, times(1)).deleteEmployee(invalidEmployeeId);
     }
 }
