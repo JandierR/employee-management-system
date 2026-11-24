@@ -13,4 +13,9 @@ public class GlobalExceptionHandler {
         String message = "Cannot delete this department because it still contains active employees. Please reassign or remove the employees first.";
         return ResponseEntity.status(HttpStatus.CONFLICT).body(message);
     }
+
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ResponseEntity<String> handleDuplicate(DuplicateResourceException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+    }
 }

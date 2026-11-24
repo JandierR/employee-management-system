@@ -6,8 +6,10 @@ import me.employeemanagementsystem.exception.ResourceNotFoundException;
 import me.employeemanagementsystem.mapper.DepartmentMapper;
 import me.employeemanagementsystem.repository.DepartmentRepository;
 import me.employeemanagementsystem.service.DepartmentService;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,7 +25,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     public DepartmentDto createDepartment(DepartmentDto departmentDto) {
         if(departmentRepository.existsDepartmentByName(departmentDto.getName())){
-            throw new RuntimeException("Department name already exists!");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Department name already exists!");
         }
         Department department = DepartmentMapper.mapToDepartment(departmentDto);
         Department savedDepartment = departmentRepository.save(department);
